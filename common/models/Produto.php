@@ -83,6 +83,8 @@ class Produto extends \yii\db\ActiveRecord
             'descricao' => 'Descrição',
             'imageFile' => 'Imagem',
             'imagem' => 'Imagem',
+            'criadoPor.username' => 'Criado Por',
+            'atualizadoPor.username' => 'Atualizado Por',
             'preco' => 'Preço',
             'status' => 'Ativo',
             'data_criacao' => 'Data de Criação',
@@ -173,6 +175,10 @@ class Produto extends \yii\db\ActiveRecord
 
     public function getImageUrl()
     {
-        return Yii::$app->params['frontendUrl'] .'/storage'.$this->imagem;
+        if ($this->imagem) {
+            return Yii::$app->params['frontendUrl'] . '/storage' . $this->imagem;
+        }
+
+        return Yii::$app->params['frontendUrl'] . '/img/no_image_available.png';
     }
 }

@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var common\models\Produto $model */
 
-$this->title = $model->id;
+$this->title = $model->nome;
 $this->params['breadcrumbs'][] = ['label' => 'Produtos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -30,15 +30,30 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'nome',
-            'descricao:ntext',
-            'imagem',
-            'preco',
-            'status',
-            'data_criacao',
-            'data_modificacao',
-            'criado_por',
-            'atualizado_por',
+            [
+                'attribute' => 'nome',
+                'options' => [
+                    'style' => 'white-space: normal'
+                ]
+            ],
+            [
+                'attribute' => 'image',
+                'format' => ['html'],
+                'value' => fn() => Html::img($model->getImageUrl(), ['style' => 'width: 80px']),
+            ],
+            'descricao:html',
+            'preco:currency',
+            [
+                'attribute' => 'status',
+                'format' => 'html',
+                'value' => fn() => Html::tag('span', $model->status ? 'Ativo' : 'Inativo', [
+                    'class' => $model->status ? 'badge badge-success' : 'badge badge-danger'
+                ]),
+            ],
+            'data_criacao:datetime',
+            'data_modificacao:datetime',
+            'criadoPor.username',
+            'atualizadoPor.username',
         ],
     ]) ?>
 
