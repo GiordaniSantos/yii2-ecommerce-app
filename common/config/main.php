@@ -9,5 +9,20 @@ return [
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'locale' => 'pt-BR',
+            'defaultTimeZone' => 'UTC',
+            'timeZone' => 'America/Sao_Paulo',
+            'dateFormat' => 'php:d/m/Y',
+            'datetimeFormat'=>'php:d/m/Y H:i',
+            'timeFormat'=>'php:H:i',
+            'currencyCode' => 'R$',
+            'thousandSeparator' => '.',
+            'decimalSeparator' => ',',
+            'nullDisplay' => '',
+        ],
     ],
+    'timeZone' => 'America/Sao_Paulo',
+    'language' => 'pt-BR',
 ];

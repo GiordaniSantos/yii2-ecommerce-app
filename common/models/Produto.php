@@ -3,6 +3,10 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\FileHelper;
 
 /**
  * This is the model class for table "{{%produtos}}".
@@ -25,12 +29,29 @@ use Yii;
  */
 class Produto extends \yii\db\ActiveRecord
 {
+    public $imageFile;
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return '{{%produtos}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'data_criacao',
+                'updatedAtAttribute' => 'data_modificacao',
+            ],
+            [
+                'class' => BlameableBehavior::class,
+                'createdByAttribute' => 'criado_por',
+                'updatedByAttribute' => 'atualizado_por',
+            ],
+        ];
     }
 
     /**
@@ -44,6 +65,7 @@ class Produto extends \yii\db\ActiveRecord
             [['preco'], 'number'],
             [['status', 'data_criacao', 'data_modificacao', 'criado_por', 'atualizado_por'], 'integer'],
             [['nome'], 'string', 'max' => 255],
+            [['imageFile'], 'image', 'extensions' => 'png, jpg, jpeg, webp', 'maxSize' => 10 * 1024 * 1024],
             [['imagem'], 'string', 'max' => 2000],
             [['atualizado_por'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['atualizado_por' => 'id']],
             [['criado_por'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['criado_por' => 'id']],
@@ -59,10 +81,11 @@ class Produto extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nome' => 'Nome',
             'descricao' => 'Descrição',
+            'imageFile' => 'Imagem',
             'imagem' => 'Imagem',
             'preco' => 'Preço',
             'status' => 'Ativo',
-            'data_criacao' => 'Data de Criaçã',
+            'data_criacao' => 'Data de Criação',
             'data_modificacao' => 'Data de Modificação',
             'criado_por' => 'Criado Por',
             'atualizado_por' => 'Atualizado Por',
@@ -116,5 +139,40 @@ class Produto extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \common\models\query\ProdutoQuery(get_called_class());
+    }
+
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        if ($this->imageFile) {
+            $this->imagem = '/produtos/' . Yii::$app->security->generateRandomString() . '/' . $this->imageFile->name;
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+        $ok = parent::save($runValidation, $attributeNames);
+
+        if ($ok && $this->imageFile) {
+            $fullPath = Yii::getAlias('@frontend/web/storage'.$this->imagem);
+            $dir = dirname($fullPath);
+
+            $this->checkIfFileSaved($dir, $fullPath, $transaction);
+        }
+
+        $transaction->commit();
+
+        return $ok;
+    }
+
+    public function checkIfFileSaved($dir, $fullPath, $transaction)
+    {
+        if (!FileHelper::createDirectory($dir) | !$this->imageFile->saveAs($fullPath)) {
+            $transaction->rollBack();
+
+            return false;
+        }
+    }
+
+    public function getImageUrl()
+    {
+        return Yii::$app->params['frontendUrl'] .'/storage'.$this->imagem;
     }
 }

@@ -22,7 +22,7 @@ use yii\bootstrap4\ActiveForm;
         'preset' => 'basic'
     ]) ?>
 
-    <?= $form->field($model, 'imagem', [
+    <?= $form->field($model, 'imageFile', [
         'template' => '
                 <div class="custom-file">
                     {input}

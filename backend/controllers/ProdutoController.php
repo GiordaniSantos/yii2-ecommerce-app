@@ -7,6 +7,7 @@ use backend\models\search\ProdutoSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * ProdutoController implements the CRUD actions for Produto model.
@@ -68,6 +69,7 @@ class ProdutoController extends Controller
     public function actionCreate()
     {
         $model = new Produto();
+        $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {

@@ -28,15 +28,26 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
+            //'id',
             'nome',
-            'descricao:ntext',
-            'imagem',
-            'preco',
-            //'status',
-            //'data_criacao',
-            //'data_modificacao',
+            [
+                'label' => 'Imagem do Produto',
+                'attribute' => 'imagem',
+                'content' => function($model){
+                    return Html::img($model->getImageUrl(), ['style' => 'width: 60px']);
+                }
+            ],
+            'preco:currency',
+            [
+                'attribute' => 'status',
+                'content' => function ($model) {
+                    return Html::tag('span', $model->status ? 'Ativo' : 'Inativo', [
+                        'class' => $model->status ? 'badge badge-success' : 'badge badge-danger'
+                    ]);
+                }
+            ],
+            'data_criacao:datetime',
+            'data_modificacao:datetime',
             //'criado_por',
             //'atualizado_por',
             [
