@@ -7,6 +7,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\FileHelper;
+use yii\helpers\StringHelper;
 
 /**
  * This is the model class for table "{{%produtos}}".
@@ -180,5 +181,10 @@ class Produto extends \yii\db\ActiveRecord
         }
 
         return Yii::$app->params['frontendUrl'] . '/img/no_image_available.png';
+    }
+
+    public function getShortDescription()
+    {
+        return StringHelper::truncateWords(strip_tags($this->descricao), 30);
     }
 }

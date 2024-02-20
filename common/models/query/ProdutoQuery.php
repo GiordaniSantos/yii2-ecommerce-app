@@ -31,4 +31,9 @@ class ProdutoQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+    public function ativos()
+    {
+        return $this->andWhere(['status' => 1]);
+    }
 }

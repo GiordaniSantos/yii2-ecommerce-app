@@ -213,6 +213,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getDisplayName()
     {
-        return $this->username;
+        $fullName = trim($this->primeiro_nome.' '.$this->ultimo_nome);
+        return $fullName ?: $this->email;
     }
 }
